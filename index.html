@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algoritmos Genéticos: Uma Introdução Interativa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Cool Neutrals with a Teal Accent -->
+    <!-- Application Structure Plan: A estrutura da aplicação foi desenhada como uma narrativa linear e vertical para guiar o estudante do geral para o específico. Começa com uma analogia biológica simples, avança para os conceitos teóricos de forma interativa, demonstra o ciclo evolutivo passo a passo e culmina em uma simulação ao vivo. Essa abordagem de "contar uma história" é mais eficaz para um iniciante do que um painel com elementos desconexos, pois constrói o conhecimento de forma incremental e contextualizada, reforçando a aprendizagem a cada seção. -->
+    <!-- Visualization & Content Choices: 1. Conceitos Fundamentais: Report Info -> Definições-chave (População, Fitness, etc.). Goal -> Informar/Organizar. Viz/Method -> Diagrama interativo feito com HTML/Tailwind. Interaction -> Hover ou clique em cada termo revela uma explicação. Justification -> Mais envolvente que uma lista de texto, ajuda a visualizar a relação entre os componentes. 2. Ciclo Evolutivo: Report Info -> Processo de Seleção, Crossover, Mutação. Goal -> Explicar a mudança. Viz/Method -> Animação passo a passo com manipulação de DOM. Interaction -> Botões para avançar em cada etapa do ciclo. Justification -> Demonstra a dinâmica do algoritmo de forma clara e controlada, facilitando a compreensão do fluxo. 3. Simulação Ao Vivo: Report Info -> Desempenho do AG ao longo do tempo. Goal -> Demonstrar/Comparar. Viz/Method -> Gráfico de linhas com Chart.js (Canvas). Interaction -> Usuário define parâmetros e observa a convergência em tempo real. Justification -> Prova concreta da eficácia do algoritmo e permite a exploração de como os parâmetros afetam o resultado. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .nav-button.active {
+            background-color: #14b8a6;
+            color: white;
+        }
+        .concept-card {
+            transition: all 0.3s ease-in-out;
+        }
+        .concept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-teal-600">🧬 Algoritmos Genéticos</h1>
+            <div class="hidden md:flex space-x-2">
+                <button onclick="scrollToSection('intro')" class="nav-button px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-teal-100 transition">Introdução</button>
+                <button onclick="scrollToSection('concepts')" class="nav-button px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-teal-100 transition">Conceitos</button>
+                <button onclick="scrollToSection('cycle')" class="nav-button px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-teal-100 transition">O Ciclo</button>
+                <button onclick="scrollToSection('demo')" class="nav-button px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-teal-100 transition">Simulação</button>
+                <button onclick="scrollToSection('apps')" class="nav-button px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-teal-100 transition">Aplicações</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-8">
+        
+        <section id="intro" class="text-center py-16">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">Inspirado na Natureza, Poderoso na Computação.</h2>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+                Imagine que você precisa encontrar a melhor solução para um problema muito complexo, como otimizar uma rota de entrega ou criar o design de uma peça de motor. Os Algoritmos Genéticos (AGs) fazem isso se inspirando na teoria da evolução de Darwin. Eles criam uma "população" de soluções candidatas e, através de um processo de "seleção natural", "cruzamento" e "mutação" ao longo de várias "gerações", evoluem para encontrar soluções cada vez melhores.
+            </p>
+        </section>
+
+        <section id="concepts" class="py-16 bg-white rounded-2xl shadow-lg">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800">Os Pilares da Evolução Digital</h3>
+                <p class="text-gray-600 mt-2">Todo Algoritmo Genético é construído sobre estes conceitos fundamentais.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-8">
+                <div class="concept-card bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h4 class="text-xl font-bold text-teal-700 mb-2">🧬 Indivíduo (ou Cromossomo)</h4>
+                    <p class="text-gray-600">Representa uma única solução candidata para o problema. É como o DNA de um ser vivo, contendo toda a informação que o define.</p>
+                </div>
+                <div class="concept-card bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h4 class="text-xl font-bold text-teal-700 mb-2">👨‍👩‍👧‍👦 População</h4>
+                    <p class="text-gray-600">Um conjunto de indivíduos. Uma população diversificada aumenta a chance de encontrar boas soluções, assim como a diversidade genética é crucial para a sobrevivência de uma espécie.</p>
+                </div>
+                <div class="concept-card bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h4 class="text-xl font-bold text-teal-700 mb-2">🏆 Função de Aptidão (Fitness)</h4>
+                    <p class="text-gray-600">Uma função que mede a qualidade de um indivíduo. Ela determina o quão "boa" é uma solução, guiando o processo de seleção. É o critério de "sobrevivência do mais apto".</p>
+                </div>
+                <div class="concept-card bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h4 class="text-xl font-bold text-teal-700 mb-2">✅ Seleção</h4>
+                    <p class="text-gray-600">O processo de escolher os indivíduos mais aptos da população para se tornarem "pais" da próxima geração. Indivíduos com maior fitness têm maior probabilidade de serem selecionados.</p>
+                </div>
+                <div class="concept-card bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h4 class="text-xl font-bold text-teal-700 mb-2">🔄 Cruzamento (Crossover)</h4>
+                    <p class="text-gray-600">Combina o "material genético" de dois pais para criar um ou mais "filhos". Os filhos herdam características de ambos os pais, permitindo a exploração de novas combinações de soluções.</p>
+                </div>
+                <div class="concept-card bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h4 class="text-xl font-bold text-teal-700 mb-2">❗️ Mutação</h4>
+                    <p class="text-gray-600">Uma pequena alteração aleatória no "DNA" de um filho. A mutação é essencial para introduzir novidade na população e evitar que o algoritmo fique preso em soluções subótimas.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="cycle" class="py-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800">O Ciclo da Vida de um AG</h3>
+                <p class="text-gray-600 mt-2">Veja como esses conceitos trabalham juntos, passo a passo, para criar uma nova geração.</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-lg flex flex-col lg:flex-row items-center gap-8">
+                <div id="cycle-animation" class="w-full lg:w-2/3 h-96 bg-gray-100 rounded-lg p-4 flex items-center justify-center text-center font-mono text-sm relative overflow-hidden">
+                    <div id="cycle-content" class="fade-in">
+                        <p class="text-lg">Clique em "Iniciar" para ver a mágica acontecer!</p>
+                    </div>
+                </div>
+                <div class="w-full lg:w-1/3">
+                    <div id="cycle-controls">
+                        <h4 id="cycle-step-title" class="text-2xl font-bold mb-4 text-gray-700">Passo 0: Início</h4>
+                        <p id="cycle-step-description" class="text-gray-600 mb-6 min-h-[100px]">
+                            O ciclo evolutivo começa com uma população de soluções geradas aleatoriamente. A partir daqui, vamos refinar essa população para encontrar a melhor solução.
+                        </p>
+                        <div class="flex space-x-4">
+                            <button id="cycle-start-btn" onclick="startCycle()" class="w-full bg-teal-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-600 transition">
+                                Iniciar Ciclo
+                            </button>
+                            <button id="cycle-next-btn" onclick="nextCycleStep()" class="w-full bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition hidden">
+                                Próximo Passo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="demo" class="py-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800">Simulação Interativa</h3>
+                <p class="text-gray-600 mt-2">Vamos colocar a teoria em prática! Defina uma frase alvo e veja o algoritmo evoluir para encontrá-la.</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div>
+                        <label for="targetString" class="block text-sm font-medium text-gray-700">Frase Alvo</label>
+                        <input type="text" id="targetString" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" value="Ser ou nao ser">
+                    </div>
+                    <div>
+                        <label for="populationSize" class="block text-sm font-medium text-gray-700">Tamanho da População</label>
+                        <input type="number" id="populationSize" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" value="200">
+                    </div>
+                    <div>
+                        <label for="mutationRate" class="block text-sm font-medium text-gray-700">Taxa de Mutação (%)</label>
+                        <input type="number" id="mutationRate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" value="1">
+                    </div>
+                </div>
+                <div class="text-center mb-8">
+                    <button id="start-ga-btn" onclick="startGA()" class="bg-teal-500 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-teal-600 transition">Iniciar Evolução</button>
+                    <button id="stop-ga-btn" onclick="stopGA()" class="bg-red-500 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-red-600 transition hidden">Parar</button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 text-center font-mono p-4 bg-gray-100 rounded-lg mb-8">
+                    <div>
+                        <h4 class="font-sans font-semibold text-gray-600">Melhor Indivíduo</h4>
+                        <p id="best-individual" class="text-teal-600 text-lg font-bold break-all">-</p>
+                    </div>
+                    <div>
+                        <h4 class="font-sans font-semibold text-gray-600">Geração</h4>
+                        <p id="generation-count" class="text-gray-800 text-lg font-bold">0</p>
+                    </div>
+                    <div>
+                        <h4 class="font-sans font-semibold text-gray-600">Aptidão Média</h4>
+                        <p id="average-fitness" class="text-gray-800 text-lg font-bold">0.00%</p>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="fitness-chart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="apps" class="py-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800">Onde a Evolução Acontece?</h3>
+                <p class="text-gray-600 mt-2">Algoritmos Genéticos não são apenas teoria; eles resolvem problemas reais em diversas áreas.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-4xl mb-4">📈</div>
+                    <h4 class="text-lg font-bold mb-2">Otimização</h4>
+                    <p class="text-sm text-gray-600">Encontrar os melhores parâmetros para sistemas complexos, como rotas logísticas (o problema do caixeiro viajante) ou design de engenharia.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-4xl mb-4">🤖</div>
+                    <h4 class="text-lg font-bold mb-2">Machine Learning</h4>
+                    <p class="text-sm text-gray-600">Ajustar os parâmetros de redes neurais (neuroevolução) e selecionar as melhores features para modelos preditivos.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-4xl mb-4">💰</div>
+                    <h4 class="text-lg font-bold mb-2">Finanças</h4>
+                    <p class="text-sm text-gray-600">Desenvolver estratégias de negociação (trading) e otimizar portfólios de investimentos para maximizar retornos e minimizar riscos.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-4xl mb-4">🎨</div>
+                    <h4 class="text-lg font-bold mb-2">Design e Arte</h4>
+                    <p class="text-sm text-gray-600">Gerar arte, música e designs inovadores através da evolução de soluções criativas, explorando combinações inesperadas.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white py-6 text-center">
+        <p>Uma introdução interativa aos Algoritmos Genéticos.</p>
+    </footer>
+
+    <script>
+        let currentStep = 0;
+        const cycleSteps = [
+            {
+                title: "Passo 1: População Inicial",
+                description: "Tudo começa com um grupo de indivíduos aleatórios. Cada um é uma tentativa de solução. A maioria é ruim, mas eles são a matéria-prima para a evolução.",
+                action: showInitialPopulation
+            },
+            {
+                title: "Passo 2: Avaliação (Fitness)",
+                description: "Calculamos a 'aptidão' de cada indivíduo. Aqui, a aptidão é o quão perto a string está de 'EVOLUIR'. Quanto mais letras corretas na posição certa, maior a aptidão.",
+                action: showFitness
+            },
+            {
+                title: "Passo 3: Seleção",
+                description: "Selecionamos os 'pais' para a próxima geração. Indivíduos com maior aptidão (destacados em verde) têm mais chances de serem escolhidos para reproduzir.",
+                action: showSelection
+            },
+            {
+                title: "Passo 4: Cruzamento (Crossover)",
+                description: "Dois pais são escolhidos e seus 'DNAs' são combinados. Um ponto de corte é definido, e o filho herda uma parte de cada pai, criando uma nova combinação.",
+                action: showCrossover
+            },
+            {
+                title: "Passo 5: Mutação",
+                description: "Com uma pequena probabilidade, um 'gene' (caractere) do novo filho sofre uma mutação aleatória. Isso introduz novidade e previne a estagnação.",
+                action: showMutation
+            },
+            {
+                title: "Passo 6: Nova Geração",
+                description: "O processo é repetido até que uma nova população de filhos seja criada, substituindo a antiga. Esta nova geração é, em média, mais apta que a anterior. O ciclo então recomeça.",
+                action: showNewGeneration
+            }
+        ];
+
+        const cycleDOM = {
+            content: document.getElementById('cycle-content'),
+            title: document.getElementById('cycle-step-title'),
+            description: document.getElementById('cycle-step-description'),
+            startBtn: document.getElementById('cycle-start-btn'),
+            nextBtn: document.getElementById('cycle-next-btn')
+        };
+
+        const target = "EVOLUIR";
+        let population = ["AXSFIUD", "KVMDOQP", "ECOLUCR", "NBJAHYR", "QWEASDZ"];
+        
+        function updateCycleUI() {
+            const step = cycleSteps[currentStep];
+            cycleDOM.title.textContent = step.title;
+            cycleDOM.description.textContent = step.description;
+            step.action();
+        }
+
+        function startCycle() {
+            currentStep = 0;
+            cycleDOM.startBtn.classList.add('hidden');
+            cycleDOM.nextBtn.classList.remove('hidden');
+            cycleDOM.nextBtn.textContent = "Próximo Passo";
+            updateCycleUI();
+        }
+
+        function nextCycleStep() {
+            currentStep++;
+            if (currentStep < cycleSteps.length) {
+                updateCycleUI();
+                if (currentStep === cycleSteps.length - 1) {
+                    cycleDOM.nextBtn.textContent = "Reiniciar";
+                }
+            } else {
+                currentStep = -1; 
+                cycleDOM.content.innerHTML = `<p class="text-lg">Clique em "Iniciar" para ver a mágica acontecer!</p>`;
+                cycleDOM.title.textContent = "Passo 0: Início";
+                cycleDOM.description.textContent = "O ciclo evolutivo começa com uma população de soluções geradas aleatoriamente. A partir daqui, vamos refinar essa população para encontrar a melhor solução.";
+                cycleDOM.startBtn.classList.remove('hidden');
+                cycleDOM.nextBtn.classList.add('hidden');
+            }
+        }
+        
+        function getFitness(str) {
+            let score = 0;
+            for(let i = 0; i < str.length; i++) {
+                if(str[i] === target[i]) score++;
+            }
+            return score;
+        }
+
+        function showInitialPopulation() {
+            let html = `<div class="grid grid-cols-1 gap-2 text-center">`;
+            population.forEach(ind => {
+                html += `<div>${ind}</div>`;
+            });
+            html += `</div>`;
+            cycleDOM.content.innerHTML = html;
+            cycleDOM.content.classList.add('fade-in');
+            setTimeout(() => cycleDOM.content.classList.remove('fade-in'), 500);
+        }
+
+        function showFitness() {
+            let html = `<div class="grid grid-cols-1 gap-2 text-center">`;
+            population.forEach(ind => {
+                html += `<div>${ind} <span class="font-bold text-blue-600">[Aptidão: ${getFitness(ind)}]</span></div>`;
+            });
+            html += `</div>`;
+            cycleDOM.content.innerHTML = html;
+            cycleDOM.content.classList.add('fade-in');
+            setTimeout(() => cycleDOM.content.classList.remove('fade-in'), 500);
+        }
+
+        function showSelection() {
+            let html = `<div class="grid grid-cols-1 gap-2 text-center">`;
+            population.forEach(ind => {
+                const fitness = getFitness(ind);
+                const isFit = fitness >= 5;
+                html += `<div class="${isFit ? 'bg-green-200 rounded p-1' : ''}">${ind} <span class="font-bold text-blue-600">[Aptidão: ${fitness}]</span></div>`;
+            });
+            html += `</div>`;
+            cycleDOM.content.innerHTML = html;
+            cycleDOM.content.classList.add('fade-in');
+            setTimeout(() => cycleDOM.content.classList.remove('fade-in'), 500);
+        }
+        
+        function showCrossover() {
+            const parentA = "ECOLUCR"; 
+            const parentB = "EVOLUIR";
+            const cutPoint = 3;
+            const child = parentA.substring(0, cutPoint) + parentB.substring(cutPoint);
+            
+            let html = `<div class="flex flex-col items-center justify-center space-y-4">`;
+            html += `<div>Pai A: <span class="text-red-500">${parentA.substring(0, cutPoint)}</span><span class="text-blue-500">${parentA.substring(cutPoint)}</span></div>`;
+            html += `<div>Pai B: <span class="text-red-500">${parentB.substring(0, cutPoint)}</span><span class="text-blue-500">${parentB.substring(cutPoint)}</span></div>`;
+            html += `<div class="text-2xl font-bold">&darr;</div>`;
+            html += `<div>Filho: <span class="text-red-500">${child.substring(0, cutPoint)}</span><span class="text-blue-500">${child.substring(cutPoint)}</span></div>`;
+            html += `</div>`;
+            cycleDOM.content.innerHTML = html;
+            cycleDOM.content.classList.add('fade-in');
+            setTimeout(() => cycleDOM.content.classList.remove('fade-in'), 500);
+        }
+        
+        function showMutation() {
+             const child = "EVOLUCR";
+             const mutatedChild = "EVOLU<span class='text-purple-600 bg-purple-200 px-1 rounded'>I</span>R";
+             let html = `<div class="flex flex-col items-center justify-center space-y-4">`;
+             html += `<div>Filho antes da mutação: ${child}</div>`;
+             html += `<div class="text-2xl font-bold">&darr;</div>`;
+             html += `<div>Filho após mutação: ${mutatedChild}</div>`;
+             html += `</div>`;
+             cycleDOM.content.innerHTML = html;
+             cycleDOM.content.classList.add('fade-in');
+             setTimeout(() => cycleDOM.content.classList.remove('fade-in'), 500);
+        }
+
+        function showNewGeneration() {
+            let html = `<div class="text-center">`;
+            html += `<div class="mb-4 text-gray-500 line-through">População Antiga</div>`;
+            html += `<div class="text-xl font-bold text-teal-600">Nova Geração, Mais Apta!</div>`;
+            html += `</div>`;
+            cycleDOM.content.innerHTML = html;
+            cycleDOM.content.classList.add('fade-in');
+            setTimeout(() => cycleDOM.content.classList.remove('fade-in'), 500);
+        }
+
+        let gaRunner;
+        let fitnessChart;
+        let isGARunning = false;
+        
+        function startGA() {
+            const targetString = document.getElementById('targetString').value;
+            const populationSize = parseInt(document.getElementById('populationSize').value);
+            const mutationRate = parseFloat(document.getElementById('mutationRate').value) / 100;
+            
+            if (!targetString || isNaN(populationSize) || isNaN(mutationRate)) {
+                alert("Por favor, preencha todos os campos corretamente.");
+                return;
+            }
+
+            document.getElementById('start-ga-btn').classList.add('hidden');
+            document.getElementById('stop-ga-btn').classList.remove('hidden');
+            isGARunning = true;
+
+            let population = [];
+            let generations = 0;
+            let bestFitnessHistory = [];
+            let avgFitnessHistory = [];
+            const validChars = ' abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?';
+
+            function getRandomChar() {
+                return validChars.charAt(Math.floor(Math.random() * validChars.length));
+            }
+
+            for (let i = 0; i < populationSize; i++) {
+                let individual = '';
+                for (let j = 0; j < targetString.length; j++) {
+                    individual += getRandomChar();
+                }
+                population.push({dna: individual, fitness: 0});
+            }
+
+            function calculateFitness() {
+                let totalFitness = 0;
+                for (let ind of population) {
+                    let score = 0;
+                    for (let i = 0; i < ind.dna.length; i++) {
+                        if (ind.dna[i] === targetString[i]) {
+                            score++;
+                        }
+                    }
+                    ind.fitness = score / targetString.length;
+                    totalFitness += ind.fitness;
+                }
+                return totalFitness / populationSize;
+            }
+
+            function selection() {
+                const matingPool = [];
+                for (const ind of population) {
+                    const n = Math.floor(ind.fitness * 100) + 1;
+                    for (let i = 0; i < n; i++) {
+                        matingPool.push(ind);
+                    }
+                }
+                return matingPool;
+            }
+
+            function crossover(parentA, parentB) {
+                const midpoint = Math.floor(Math.random() * targetString.length);
+                const childDna = parentA.dna.substring(0, midpoint) + parentB.dna.substring(midpoint);
+                return {dna: childDna, fitness: 0};
+            }
+
+            function mutate(individual) {
+                let newDna = '';
+                for (let i = 0; i < individual.dna.length; i++) {
+                    if (Math.random() < mutationRate) {
+                        newDna += getRandomChar();
+                    } else {
+                        newDna += individual.dna[i];
+                    }
+                }
+                individual.dna = newDna;
+            }
+            
+            if (fitnessChart) {
+                fitnessChart.destroy();
+            }
+            const ctx = document.getElementById('fitness-chart').getContext('2d');
+            fitnessChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                    {
+                        label: 'Melhor Aptidão',
+                        data: [],
+                        borderColor: '#14b8a6',
+                        tension: 0.1,
+                        fill: false
+                    },
+                    {
+                        label: 'Aptidão Média',
+                        data: [],
+                        borderColor: '#6b7280',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: {
+                                callback: function(value) {return (value * 100).toFixed(0) + '%'}
+                            }
+                        }
+                    }
+                }
+            });
+
+            function evolve() {
+                if (!isGARunning) return;
+
+                const averageFitness = calculateFitness();
+                
+                population.sort((a, b) => b.fitness - a.fitness);
+                const bestIndividual = population[0];
+
+                bestFitnessHistory.push(bestIndividual.fitness);
+                avgFitnessHistory.push(averageFitness);
+                
+                document.getElementById('best-individual').textContent = bestIndividual.dna;
+                document.getElementById('generation-count').textContent = generations;
+                document.getElementById('average-fitness').textContent = (averageFitness * 100).toFixed(2) + '%';
+                
+                fitnessChart.data.labels.push(generations);
+                fitnessChart.data.datasets[0].data = bestFitnessHistory;
+                fitnessChart.data.datasets[1].data = avgFitnessHistory;
+                fitnessChart.update();
+
+                if (bestIndividual.dna === targetString) {
+                    stopGA();
+                    document.getElementById('best-individual').classList.add('bg-green-200', 'p-2', 'rounded-md');
+                    return;
+                }
+
+                const matingPool = selection();
+                const newPopulation = [];
+
+                for (let i = 0; i < populationSize; i++) {
+                    const parentA = matingPool[Math.floor(Math.random() * matingPool.length)];
+                    const parentB = matingPool[Math.floor(Math.random() * matingPool.length)];
+                    const child = crossover(parentA, parentB);
+                    mutate(child);
+                    newPopulation.push(child);
+                }
+                population = newPopulation;
+                generations++;
+                
+                gaRunner = requestAnimationFrame(evolve);
+            }
+            evolve();
+        }
+
+        function stopGA() {
+            isGARunning = false;
+            cancelAnimationFrame(gaRunner);
+            document.getElementById('start-ga-btn').classList.remove('hidden');
+            document.getElementById('stop-ga-btn').classList.add('hidden');
+        }
+        
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            const navButtons = document.querySelectorAll('.nav-button');
+            let currentSection = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if(pageYOffset >= sectionTop - 60){
+                    currentSection = section.getAttribute('id');
+                }
+            });
+
+            navButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('onclick').includes(currentSection)) {
+                    button.classList.add('active');
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
