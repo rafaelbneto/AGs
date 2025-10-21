@@ -9,56 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Cool Neutrals with a Teal Accent -->
-    <!-- Application Structure Plan: A estrutura da aplicação foi desenhada como uma narrativa linear e vertical para guiar o estudante do geral para o específico. Começa com uma analogia biológica simples, avança para os conceitos teóricos de forma interativa, demonstra o ciclo evolutivo passo a passo e culmina em uma simulação ao vivo. Essa abordagem de "contar uma história" é mais eficaz para um iniciante do que um painel com elementos desconexos, pois constrói o conhecimento de forma incremental e contextualizada, reforçando a aprendizagem a cada seção. -->
-    <!-- Visualization & Content Choices: 1. Conceitos Fundamentais: Report Info -> Definições-chave (População, Fitness, etc.). Goal -> Informar/Organizar. Viz/Method -> Diagrama interativo feito com HTML/Tailwind. Interaction -> Hover ou clique em cada termo revela uma explicação. Justification -> Mais envolvente que uma lista de texto, ajuda a visualizar a relação entre os componentes. 2. Ciclo Evolutivo: Report Info -> Processo de Seleção, Crossover, Mutação. Goal -> Explicar a mudança. Viz/Method -> Animação passo a passo com manipulação de DOM. Interaction -> Botões para avançar em cada etapa do ciclo. Justification -> Demonstra a dinâmica do algoritmo de forma clara e controlada, facilitando a compreensão do fluxo. 3. Simulação Ao Vivo: Report Info -> Desempenho do AG ao longo do tempo. Goal -> Demonstrar/Comparar. Viz/Method -> Gráfico de linhas com Chart.js (Canvas). Interaction -> Usuário define parâmetros e observa a convergência em tempo real. Justification -> Prova concreta da eficácia do algoritmo e permite a exploração de como os parâmetros afetam o resultado. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa;
-            color: #212529;
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 400px;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 400px;
-            }
-        }
-        .glassmorphism {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        .nav-button.active {
-            background-color: #14b8a6;
-            color: white;
-        }
-        .concept-card {
-            transition: all 0.3s ease-in-out;
-        }
-        .concept-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="bg-gray-50 text-gray-800">
 
     <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-md">
@@ -77,7 +30,7 @@
     <main class="container mx-auto px-6 py-8">
         
         <section id="intro" class="text-center py-16">
-            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">Inspirado na Natureza, Poderoso na Computação.</h2>
+            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">Introdução aos Algoritmos Genéticos</h2>
             <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
                 Imagine que você precisa encontrar a melhor solução para um problema muito complexo, como otimizar uma rota de entrega ou criar o design de uma peça de motor. Os Algoritmos Genéticos (AGs) fazem isso se inspirando na teoria da evolução de Darwin. Eles criam uma "população" de soluções candidatas e, através de um processo de "seleção natural", "cruzamento" e "mutação" ao longo de várias "gerações", evoluem para encontrar soluções cada vez melhores.
             </p>
@@ -149,7 +102,7 @@
         <section id="demo" class="py-16">
             <div class="text-center mb-12">
                 <h3 class="text-3xl font-bold text-gray-800">Simulação Interativa</h3>
-                <p class="text-gray-600 mt-2">Vamos colocar a teoria em prática! Defina uma frase alvo e veja o algoritmo evoluir para encontrá-la.</p>
+                <p class="text-gray-600 mt-2">Defina uma frase alvo e veja o algoritmo evoluir para encontrá-la.</p>
             </div>
             <div class="bg-white p-8 rounded-2xl shadow-lg">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -195,7 +148,7 @@
         <section id="apps" class="py-16">
             <div class="text-center mb-12">
                 <h3 class="text-3xl font-bold text-gray-800">Onde a Evolução Acontece?</h3>
-                <p class="text-gray-600 mt-2">Algoritmos Genéticos não são apenas teoria; eles resolvem problemas reais em diversas áreas.</p>
+                <p class="text-gray-600 mt-2">Algoritmos Genéticos não são apenas teoria. Eles resolvem problemas reais em diversas áreas.</p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div class="bg-white p-6 rounded-lg shadow-md text-center">
